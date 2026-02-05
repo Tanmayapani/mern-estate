@@ -13,7 +13,8 @@ export const verifyToken = (req, res, next) => {
 
     // If everything is fine, we save the user info to the request 
     // so the controller knows WHO is making the update
-    req.user = user;
-    next();
+    req.user = user; 
+    next(); 
   });
 };
+// This middleware will be used in routes that require authentication, like updating user info.

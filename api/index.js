@@ -17,7 +17,7 @@ mongoose.connect(process.env.MONGO)
 const app = express(); 
 
 app.use(express.json());
-app.use(cookieParser());
+app.use(cookieParser()); // We need this to read cookies in our verifyToken middleware
 
 app.use(express.json());
 

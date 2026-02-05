@@ -36,7 +36,7 @@ export const updateUser = async (req, res, next) => {
         // 4. Remove the password from the response for security
         const { password, ...rest } = updatedUser._doc;
 
-        // 5. Send back the updated user data
+        // 5. Send back the updated user data (without the password)
         res.status(200).json(rest);
 
     } catch (error) {
