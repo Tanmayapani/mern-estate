@@ -1,10 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useRef, useState, useEffect } from "react";
-import { 
-  updateUserStart, 
-  updateUserSuccess, 
-  updateUserFailure 
-} from "../redux/user/userSlice";
+import { updateUserStart, updateUserSuccess, updateUserFailure } from "../redux/user/userSlice";
 
 export default function Profile() {
   const { currentUser, loading, error } = useSelector((state) => state.user);
@@ -16,7 +12,7 @@ export default function Profile() {
   const [filePerc, setFilePerc] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
-  const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [updateSuccess, setUpdateSuccess] = useState(false); // To show success message after profile update  
 
   // Automatically start upload when a file is selected
   useEffect(() => {
@@ -63,14 +59,14 @@ export default function Profile() {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {                                 
     e.preventDefault();
     try {
-      dispatch(updateUserStart());
+      dispatch(updateUserStart()); 
       const res = await fetch(`/api/user/update/${currentUser._id}`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json', 
         },
         body: JSON.stringify(formData),
       });
@@ -126,7 +122,7 @@ export default function Profile() {
           placeholder="username" 
           defaultValue={currentUser.username} 
           id="username"
-          className="border p-3 rounded-lg" 
+          className="bg-white border border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
           onChange={handleChange}
         />
         <input 
@@ -134,14 +130,14 @@ export default function Profile() {
           placeholder="email" 
           defaultValue={currentUser.email} 
           id="email"
-          className="border p-3 rounded-lg" 
+          className="bg-white border border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
           onChange={handleChange}
         />
         <input 
           type="password" 
           placeholder="password" 
           id="password"
-          className="border p-3 rounded-lg" 
+          className="bg-white border border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
           onChange={handleChange}
         />
         
