@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 dotenv.config();
 import userRouter from './routes/user.route.js';
@@ -14,6 +15,9 @@ mongoose.connect(process.env.MONGO)
   });
 
 const app = express(); 
+
+app.use(express.json());
+app.use(cookieParser());
 
 app.use(express.json());
 
