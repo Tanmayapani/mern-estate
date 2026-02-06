@@ -1,5 +1,6 @@
-import {Link, useNavigate} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react'; 
+import OAuth from '../components/OAuth';
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
@@ -16,30 +17,21 @@ export default function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       setLoading(true);
-      setError(null); // Clear previous errors when starting a new request
-    
+      setError(null); 
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-
       const data = await res.json();
-      console.log(data);
-
       if (data.success === false) {
         setLoading(false);
         setError(data.message);
         return;
       }
-      
       setLoading(false);
-      setError(null); // Clear error if signup is successful
       navigate('/sign-in');
     } catch (error) {
       setLoading(false);
@@ -47,45 +39,42 @@ export default function SignUp() {
     }
   };
 
-  
-
   return (
     <div className='p-3 max-w-lg mx-auto'>
-      <h1 className='text-3xl text-center font-semibold my-7'>Sign Up</h1>
+      <h1 className='text-3xl text-center font-semibold my-7 text-slate-800'>Sign Up</h1>
       <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
-        
         <input 
-          type="text" placeholder='username' 
-          className='bg-white border border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition-all' 
-          id='username' onChange={handleChange}
+          type="text" placeholder='username' id='username' 
+          className='border-2 border-slate-400 p-3 rounded-lg bg-white outline-none focus:border-slate-600 transition-all' 
+          onChange={handleChange}
         />
         <input 
-          type="email" placeholder='email' 
-          className='bg-white border border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition-all' 
-          id='email' onChange={handleChange}
+          type="email" placeholder='email' id='email' 
+          className='border-2 border-slate-400 p-3 rounded-lg bg-white outline-none focus:border-slate-600 transition-all' 
+          onChange={handleChange}
         />
         <input 
-          type="password" placeholder='password' 
-          className='bg-white border border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition-all' 
-          id='password' onChange={handleChange}
+          type="password" placeholder='password' id='password' 
+          className='border-2 border-slate-400 p-3 rounded-lg bg-white outline-none focus:border-slate-600 transition-all' 
+          onChange={handleChange}
         />
 
-        <button disabled={loading} 
-          className='bg-slate-700 text-white p-3
-          rounded-lg uppercase hover:opacity-95
-          disabled:opacity-80'>
-        {loading ? 'Loading...' : 'Sign Up'}
+        <button 
+          disabled={loading} 
+          className='bg-slate-700 text-white p-3 rounded-lg uppercase font-semibold hover:bg-slate-800 disabled:opacity-80 transition-all shadow-sm hover:shadow-md'
+        >
+          {loading ? 'Loading...' : 'Sign Up'}
         </button>
         <OAuth />
       </form>
 
-      <div className="flex gap-2 mt-5">
-         <p>Have an account?</p>
-          <Link to="/sign-in">
-            <span className='text-blue-700'>Sign In</span>
-          </Link>
+      <div className="flex gap-2 mt-5 font-medium">
+        <p className='text-slate-700'>Have an account?</p>
+        <Link to="/sign-in">
+          <span className='text-blue-600 hover:underline'>Sign In</span>
+        </Link>
       </div>
-      {error && <p className='text-red-600 mt-3'>{error}</p>}
+      {error && <p className='text-red-700 mt-5 font-semibold'>{error}</p>}
     </div>
-  )
+  );
 }

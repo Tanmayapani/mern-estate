@@ -10,14 +10,12 @@ export default function Profile() {
   const fileRef = useRef(null);
   const dispatch = useDispatch();
   
-  // State for file upload and form data
   const [file, setFile] = useState(undefined);
   const [filePerc, setFilePerc] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
-  const [updateSuccess, setUpdateSuccess] = useState(false); // To show success message after profile update  
+  const [updateSuccess, setUpdateSuccess] = useState(false);
 
-  // Automatically start upload when a file is selected
   useEffect(() => {
     if (file) {
       handleFileUpload(file);
@@ -25,30 +23,22 @@ export default function Profile() {
   }, [file]);
 
   const handleFileUpload = async (file) => {
-    const cloudName = "dbjjjrgbf"; // Your Cloud Name
-    const uploadPreset = "mern-estate"; // The 'Unsigned' preset you created
-
+    const cloudName = "dbjjjrgbf";
+    const uploadPreset = "mern-estate";
     const data = new FormData();
     data.append("file", file);
     data.append("upload_preset", uploadPreset);
 
     try {
       setFileUploadError(false);
-      setFilePerc(10); // Show user that upload has started
-
+      setFilePerc(10);
       const res = await fetch(
         `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-        {
-          method: "POST",
-          body: data,
-        }
+        { method: "POST", body: data }
       );
-      
       const uploadedImage = await res.json();
-      
       if (uploadedImage.secure_url) {
         setFilePerc(100);
-        // Save the Cloudinary URL to formData so it can be sent to MongoDB
         setFormData({ ...formData, avatar: uploadedImage.secure_url });
       } else {
         setFileUploadError(true);
@@ -68,9 +58,7 @@ export default function Profile() {
       dispatch(updateUserStart()); 
       const res = await fetch(`/api/user/update/${currentUser._id}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json', 
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
       const data = await res.json();
@@ -88,17 +76,14 @@ export default function Profile() {
   const handleDeleteUser = async () => {
     try {
       dispatch(deleteUserStart());
-      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
-        method: 'DELETE',
-      });
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, { method: 'DELETE' });
       const data = await res.json();
       if (data.success === false) {
         dispatch(deleteUserFailure(data.message));
         return;
       }
       dispatch(deleteUserSuccess(data));
-    } 
-    catch (error) {
+    } catch (error) {
       dispatch(deleteUserFailure(error.message));
     }
   }
@@ -106,103 +91,85 @@ export default function Profile() {
   const handleSignOut = async () => {
     try {
       dispatch(signOutUserStart());
-      const res = await fetch('/api/auth/signout', {
-        method: 'GET',
-      });
+      const res = await fetch('/api/auth/signout', { method: 'GET' });
       const data = await res.json();
       if (data.success === false) {
-        console.log(data.message);
         dispatch(signOutUserFailure(data.message));
         return;
       }
       dispatch(signOutUserSuccess(data));
     } catch (error) {
-      console.log(error.message);
+      dispatch(signOutUserFailure(error.message));
     }
   };
 
   return (
     <div className="p-3 max-w-lg mx-auto flex flex-col gap-4">
-      <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
+      <h1 className='text-3xl font-semibold text-center my-7 text-slate-800'>Profile</h1>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {/* Hidden file input */}
         <input 
           onChange={(e) => setFile(e.target.files[0])} 
-          type="file" 
-          ref={fileRef} 
-          hidden 
-          accept="image/*"
+          type="file" ref={fileRef} hidden accept="image/*"
         />
 
-        {/* Profile Image - Click to trigger file input */}
         <img 
           onClick={() => fileRef.current.click()} 
           src={formData.avatar || currentUser.avatar} 
           alt="profile"
-          className="rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2"
+          className="rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2 border-2 border-slate-300 shadow-sm hover:shadow-md transition-shadow"
         />
 
-        {/* Upload Status Feedback */}
         <p className='text-sm self-center'>
           {fileUploadError ? (
-            <span className='text-red-700'>Error: Image upload failed</span>
+            <span className='text-red-700 font-semibold'>Error: Image upload failed</span>
           ) : filePerc > 0 && filePerc < 100 ? (
             <span className='text-slate-700'>{`Uploading ${filePerc}%...`}</span>
           ) : filePerc === 100 ? (
-            <span className='text-green-700'>Image uploaded successfully!</span>
+            <span className='text-green-700 font-semibold'>Image uploaded successfully!</span>
           ) : (
             ''
           )}
         </p>
 
         <input 
-          type="text" 
-          placeholder="username" 
-          defaultValue={currentUser.username} 
-          id="username"
-          className="bg-white border border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+          type="text" placeholder="username" defaultValue={currentUser.username} id="username"
+          className="border-2 border-slate-400 p-3 rounded-lg bg-white outline-none focus:border-slate-600 transition-all" 
           onChange={handleChange}
         />
         <input 
-          type="email" 
-          placeholder="email" 
-          defaultValue={currentUser.email} 
-          id="email"
-          className="bg-white border border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+          type="email" placeholder="email" defaultValue={currentUser.email} id="email"
+          className="border-2 border-slate-400 p-3 rounded-lg bg-white outline-none focus:border-slate-600 transition-all" 
           onChange={handleChange}
         />
         <input 
-          type="password" 
-          placeholder="password" 
-          id="password"
-          className="bg-white border border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+          type="password" placeholder="password" id="password"
+          className="border-2 border-slate-400 p-3 rounded-lg bg-white outline-none focus:border-slate-600 transition-all" 
           onChange={handleChange}
         />
         
         <button 
           disabled={loading}
-          className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
+          className="bg-slate-700 text-white p-3 rounded-lg uppercase font-semibold hover:bg-slate-800 disabled:opacity-80 transition-colors"
         >
-          {loading ? 'Loading...' : 'update'}
+          {loading ? 'Loading...' : 'Update Profile'}
         </button>
       </form>
 
-      <Link className="bg-green-700 text-white p-3 
-      rounded-lg uppercase text-center hover:opacity-95 " 
-      to="/create-listing">
-      Create Listing
+      <Link 
+        className="bg-green-700 text-white p-3 rounded-lg uppercase font-semibold text-center hover:bg-green-800 transition-colors" 
+        to="/create-listing"
+      >
+        Create Listing
       </Link>
 
-      <div className="flex justify-between mt-5">
-        <span onClick={handleDeleteUser} className="text-red-600 cursor-pointer">Delete Account</span>
-        <span onClick={handleSignOut} className="text-red-600 cursor-pointer">Sign Out</span>
+      <div className="flex justify-between mt-5 font-semibold">
+        <span onClick={handleDeleteUser} className="text-red-700 cursor-pointer hover:underline">Delete Account</span>
+        <span onClick={handleSignOut} className="text-red-700 cursor-pointer hover:underline">Sign Out</span>
       </div>
       
-      <p className='text-red-700 mt-5'>{error ? error : ''}</p>
-      <p className='text-green-700 mt-5'>
-        {updateSuccess ? 'User updated successfully!' : ''}
-      </p>
+      {error && <p className='text-red-700 mt-5 font-semibold'>{error}</p>}
+      {updateSuccess && <p className='text-green-700 mt-5 font-semibold text-center'>User updated successfully!</p>}
     </div>
   );
 }
