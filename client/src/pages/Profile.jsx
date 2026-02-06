@@ -3,6 +3,7 @@ import { useRef, useState, useEffect } from "react";
 import { updateUserStart, updateUserSuccess, updateUserFailure, 
   deleteUserStart, deleteUserSuccess, deleteUserFailure, 
   signOutUserStart, signOutUserSuccess, signOutUserFailure } from "../redux/user/userSlice";
+import { Link } from "react-router-dom";
 
 export default function Profile() {
   const { currentUser, loading, error } = useSelector((state) => state.user);
@@ -121,7 +122,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="p-3 max-w-lg mx-auto">
+    <div className="p-3 max-w-lg mx-auto flex flex-col gap-4">
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -186,6 +187,12 @@ export default function Profile() {
           {loading ? 'Loading...' : 'update'}
         </button>
       </form>
+
+      <Link className="bg-green-700 text-white p-3 
+      rounded-lg uppercase text-center hover:opacity-95 " 
+      to="/create-listing">
+      Create Listing
+      </Link>
 
       <div className="flex justify-between mt-5">
         <span onClick={handleDeleteUser} className="text-red-600 cursor-pointer">Delete Account</span>
