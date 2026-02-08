@@ -1,16 +1,17 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, use } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
-export default function CreateListing() {
+export default function UpdateListing() {
   const navigate = useNavigate();
+  const params = useParams();
   const { currentUser } = useSelector((state) => state.user);
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [imageUploadError, setImageUploadError] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  
+  const fileRef = useRef(null);
   const [formData, setFormData] = useState({
     imageUrls: [],
     name: '',
@@ -26,7 +27,27 @@ export default function CreateListing() {
     furnished: false,
   });
 
-  const fileRef = useRef(null);
+  useEffect(() => {
+    const fetchListingData = async () => {
+      try {
+        const listingId = params.id;
+        const res = await fetch(`/api/listing/get/${listingId}`);
+        const data = await res.json();
+
+        if (data.success === false) {
+          setError(data.message);
+          return;
+        }
+
+        setFormData(data);
+
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+
+    fetchListingData();
+  }, []);
 
   const handleImageChange = (e) => {
     setFiles(Array.from(e.target.files));
@@ -106,7 +127,7 @@ export default function CreateListing() {
       setLoading(true);
       setError(false);
 
-      const res = await fetch('/api/listing/create', {
+      const res = await fetch(`/api/listing/update/${formData._id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -136,7 +157,7 @@ export default function CreateListing() {
 
   return (
     <main className='p-3 max-w-4xl mx-auto'>
-      <h1 className='text-3xl font-semibold text-center my-7 text-slate-800'>Create a Listing</h1>
+      <h1 className='text-3xl font-semibold text-center my-7 text-slate-800'>Update a Listing</h1>
       <form onSubmit={handleSubmit} className='flex flex-col sm:flex-row gap-8'>
         <div className='flex flex-col gap-4 flex-1'>
           <input type='text' placeholder='Name' id='name' required onChange={handleChange} value={formData.name} className='border-2 border-slate-400 p-3 rounded-lg bg-white outline-none focus:border-slate-600' />
@@ -208,7 +229,7 @@ export default function CreateListing() {
             </div>
           ))}
           <button disabled={loading || uploading} className='p-4 bg-slate-700 text-white rounded-lg uppercase font-semibold text-md hover:bg-slate-800 disabled:opacity-80 mt-2'>
-            {loading ? 'Creating...' : 'Create Listing'}
+            {loading ? 'Updating...' : 'Update Listing'}
           </button>
           {error && <p className='text-red-700 text-sm font-semibold mt-2'>{error}</p>}
         </div>
