@@ -1,3 +1,4 @@
+import Listing from '../models/listing.model.js';
 import User from '../models/user.model.js';
 import { errorHandler } from '../utils/error.js';
 import bcryptjs from 'bcryptjs';
@@ -55,4 +56,23 @@ export const deleteUser = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
+};
+
+export const getUserListings = async (req, res, next) => {
+  // Use == instead of === if one is an object and one is a string
+  if (req.user.id === req.params.id) {
+    try {
+      // We search for userRef. Ensure your Listing model has "userRef" as a String or ObjectId
+      const listings = await Listing.find({ userRef: req.params.id });
+      
+      // DEBUG: Add this log to your terminal to see what's happening
+      console.log("Found listings count:", listings.length);
+      
+      res.status(200).json(listings);
+    } catch (error) {
+      next(error);
+    }
+  } else {
+    return next(errorHandler(401, 'You can only view your own listings!'));
+  }
 };
